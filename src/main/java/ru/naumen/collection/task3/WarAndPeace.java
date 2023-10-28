@@ -18,13 +18,14 @@ public class WarAndPeace {
     private static final Path WAR_AND_PEACE_FILE_PATH = Path.of("src/main/resources",
             "Лев_Толстой_Война_и_мир_Том_1,_2,_3,_4_(UTF-8).txt");
 
-    public static void printResult(int startIndex, int endIndex, List<Integer> valuesSortedList, Map<String, Integer> wordsDict) {
+    public static void printResult(Queue<Integer> queue, Map<String, Integer> wordsDict) {
         int counter = 0;
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = 1; i < 11; i++) {
+            int value = queue.poll();
             for (Map.Entry<String, Integer> entry : wordsDict.entrySet()) {
-                if (entry.getValue().equals(valuesSortedList.get(i))) {
+                if (entry.getValue().equals(value)) {
                     counter++;
-                    System.out.printf("%d. word: %s, count: %d\n", counter, entry.getKey(), valuesSortedList.get(i));
+                    System.out.printf("%d) word: %s\t count: %d\n", counter, entry.getKey(), value);
                 }
                 if (counter == 10)
                     break;
@@ -33,37 +34,29 @@ public class WarAndPeace {
     }
 
     public static void main(String[] args) {
-        Map<String, Integer> wordsDict = new HashMap<>(); // Удобнее всего здесь использовать для подсчёта слов
-        List<Integer> valuesList = new ArrayList<>(); // Понадобится для быстрого итерирования
+        Map<String, Integer> wordsDict = new LinkedHashMap<>();
+        Queue<Integer> queueTop = new PriorityQueue<>(Comparator.reverseOrder());
+        Queue<Integer> queueLast = new PriorityQueue<>();
         WordParser parser = new WordParser(WAR_AND_PEACE_FILE_PATH);
         parser.forEachWord(word -> {
-            if (!wordsDict.containsKey(word))
-                wordsDict.put(word, 0);
-            wordsDict.put(word, wordsDict.get(word) + 1);
+            wordsDict.merge(word, 1, Integer::sum);
         });
-        for (Map.Entry<String, Integer> entry : wordsDict.entrySet())
-            valuesList.add(entry.getValue());
-        Collections.sort(valuesList);
-        Collections.reverse(valuesList);
+        for (Map.Entry<String, Integer> entry : wordsDict.entrySet()) {
+            queueTop.add(entry.getValue());
+            queueLast.add(entry.getValue());
+        }
         System.out.println("ТОП 10 слов произведения:");
-        printResult(0, 10, valuesList, wordsDict);
+        printResult(queueTop, wordsDict);
         System.out.println("\nНаименее используемые слова:");
-        printResult(valuesList.size() - 10, valuesList.size(), valuesList, wordsDict);
-        /* Сложность O(n) = 3n + mlog(m) + 22m
-        * n - количество слов в файле
-        * m - количество уникальных слов в файле (m <= n)
+        printResult(queueLast, wordsDict);
+        /* Сложность O(n) = 22n
+        * n - количество уникальных слов в файле
         *
-        * 3n - это при заполнении словаря wordDict (содержит три операции: containsKey и два put; у каждой сложность O(1))
-        * mlog(m) - операция сортировки
-        * 22m - для преобразования values в список требуется m операций O(m);
-        *       для переворачивания списка требуется m операций O(m);
-        *       10m на функцию printResult (а так как вызываем два раза, то получаем 20m)
+        * 22n - для заполнения queue требуется 2n операций O(n);
+        *       10n на функцию printResult (а так как вызываем два раза, то получаем 20n)
         *
-        * Для упрощения функции можно опустить два последних слогамых, однако тогда нужно увеличить константу перед n.
-        * В итоге поучаем: O(n) = 4n
-        *
-        * HashMap - удобнее всего здесь использовать для подсчёта слов
-        * ArrayList - для быстрого итерирования
+        * LinkedHashMap - для быстрой итерации
+        * PriorityQueue - для быстрого вычисления наименьших/наибольших значений
         * */
     }
 }

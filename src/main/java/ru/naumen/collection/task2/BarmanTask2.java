@@ -26,29 +26,12 @@ import java.util.*;
  */
 public class BarmanTask2 {
 
-    public List<Product> findProductsByTicket(Ticket ticket, Map<Long, Combo> orders) {
-        List<Product> result = new LinkedList<>(); // linked list для быстрого добавления продуктов
-        Map<Long, Combo> ordersHM = new HashMap<>(orders); // hash map для быстрого поиска заказа
-        Combo combo = ordersHM.get(ticket.getId());
-        switch (combo) {
-            case Drinks -> {
-                result.add(Product.Drink);
-                result.add(Product.Drink);
-            }
-            case FoodAndDrinks -> {
-                result.add(Product.Food);
-                result.add(Product.Drink);
-                result.add(Product.Drink);
-            }
-        }
-        return result.stream().toList();
+    public Combo findProductsByTicket(Ticket ticket, Map<Ticket, Combo> orders) {
+        return orders.get(ticket);
         /*
-        * Сложность функции - O(1) = 4
+        * Сложность функции - O(1) = 1
         * Мы находим заказ быстро благодаря использованию hash map (находим за O(1))
-        * Далее наполняем заказ.
-        *
-        * LinkedList - для быстрого добавления продуктов
-        * HashMap - для быстрого поиска заказа
+        * Для быстрого поиска в классе Ticket были переопределены методы equals и hashCode
         * */
     }
 
