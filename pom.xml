@@ -14,13 +14,29 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <telegrambots.version>5.6.0</telegrambots.version>
+    <vk-sdk.version>1.0.6</vk-sdk.version>
+    <junit.version>3.8.1</junit.version>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots</artifactId>
+      <version>${telegrambots.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.vk.api</groupId>
+      <artifactId>sdk</artifactId>
+      <version>${vk-sdk.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

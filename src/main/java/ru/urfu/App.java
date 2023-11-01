@@ -1,13 +1,13 @@
 package ru.urfu;
 
 /**
- * Hello world!
+ * Класс для запуска приложения
  *
  */
 public class App 
 {
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+    public static void main( String[] args ) {
+        RunnerBot runnerBot = new RunnerBot();
+        runnerBot.run();
     }
 }
