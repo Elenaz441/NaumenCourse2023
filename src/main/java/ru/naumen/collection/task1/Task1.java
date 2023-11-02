@@ -40,7 +40,7 @@ public class Task1 {
             if (collBSet.contains(user))
                 duplicates.add(user);
         }
-        return duplicates.stream().toList();
+        return duplicates;
         /* Сложность O(n) = n + m
             n - Размер коллекции collA
             m - Размер коллекции collB
