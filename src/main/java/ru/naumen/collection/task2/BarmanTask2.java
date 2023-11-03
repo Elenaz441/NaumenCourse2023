@@ -26,7 +26,9 @@ import java.util.*;
  */
 public class BarmanTask2 {
 
-    public Combo findProductsByTicket(Ticket ticket, HashMap<Ticket, Combo> orders) {
+    HashMap<Ticket, Combo> orders;
+
+    public Combo findProductsByTicket(Ticket ticket) {
         return orders.get(ticket);
         /*
         * Сложность функции - O(1) = 1

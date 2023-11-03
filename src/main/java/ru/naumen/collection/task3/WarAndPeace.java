@@ -21,25 +21,31 @@ public class WarAndPeace {
     public static void printResult(Queue<Map.Entry<String, Integer>> queue) {
         for (int i = 1; i <= 10; i++) {
             Map.Entry<String, Integer> value = queue.poll();
-            System.out.printf("%d) word: %s\t count: %d\n", i, value.getKey(), value.getValue());
+            System.out.printf("word: %s\t count: %d\n", value.getKey(), value.getValue());
         }
     }
 
     public static void main(String[] args) {
         Map<String, Integer> wordsDict = new LinkedHashMap<>();
-        Queue<Map.Entry<String, Integer>> queueTop = new PriorityQueue<>(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        Queue<Map.Entry<String, Integer>> queueLast = new PriorityQueue<>(Map.Entry.comparingByValue());
+        Queue<Map.Entry<String, Integer>> queueTop = new PriorityQueue<>(Map.Entry.comparingByValue());
+        Queue<Map.Entry<String, Integer>> queueLast = new PriorityQueue<>(Map.Entry.comparingByValue(Comparator.reverseOrder()));
         WordParser parser = new WordParser(WAR_AND_PEACE_FILE_PATH);
         parser.forEachWord(word -> wordsDict.merge(word, 1, Integer::sum));
         for (Map.Entry<String, Integer> entry : wordsDict.entrySet()) {
             queueTop.add(entry);
             queueLast.add(entry);
+            if (queueTop.size() > 10) {
+                queueTop.poll();
+            }
+            if (queueLast.size() > 10) {
+                queueLast.poll();
+            }
         }
         System.out.println("ТОП 10 слов произведения:");
         printResult(queueTop);
         System.out.println("\nНаименее используемые слова:");
         printResult(queueLast);
-        /* Сложность O(n) = 2n + 20
+        /* Сложность O(n) ~ 2n + 20
         * n - количество уникальных слов в файле
         *
         * 2n - для заполнения queue требуется 2n операций O(n);
