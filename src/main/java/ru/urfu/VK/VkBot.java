@@ -16,9 +16,8 @@ import java.util.Random;
 /**
  * Класс для vk-бота
  */
-public class VkBot {
+public class VkBot implements Bot {
 
-    private Bot bot;
     private VkApiClient vk;
     private GroupActor actor;
     private int ts;
@@ -26,14 +25,12 @@ public class VkBot {
 
     /**
      * Конструктор для vk-бота
-     * @param bot - логика нашего бота
      */
-    public VkBot(Bot bot) {
-        this.bot = bot;
+    public VkBot(String botName, String botToken) {
         TransportClient transportClient = new HttpTransportClient();
         vk = new VkApiClient(transportClient);
         try {
-            actor = new GroupActor(Integer.valueOf(bot.getBotName()), bot.getBotToken());
+            actor = new GroupActor(Integer.valueOf(botName), botToken);
             ts = vk.messages().getLongPollServer(actor).execute().getTs();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -41,16 +38,14 @@ public class VkBot {
         random = new Random();
     }
 
-    /**
-     * Прослушиватель входящих сообщений
-     */
-    public void listenForMessages() {
+    @Override
+    public void startBot() {
         while (true) {
             List<Message> messages = getMessages();
             if (messages != null && !messages.isEmpty()) {
                 messages.forEach(message -> {
-                    String response = bot.formResponse(message.getText());
-                    sendText(message, response);
+                    String response = logic.formResponse(message.getText());
+                    sendText(message.getFromId().longValue(), response);
                 });
             }
             try {
@@ -65,6 +60,19 @@ public class VkBot {
         }
     }
 
+    @Override
+    public void sendText(Long chatId, String message) {
+        try {
+            vk.messages().send(actor).
+                    message(message).
+                    userId(chatId.intValue()).
+                    randomId(random.nextInt(10000)).
+                    execute();
+        } catch (ApiException | ClientException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Получить все входящие сообщения
      */
@@ -74,20 +82,5 @@ public class VkBot {
             return historyQuery.execute().getMessages().getItems();
         } catch (ApiException | ClientException e) {e.printStackTrace();}
         return null;
-    }
-
-    /**
-     * Отправить ответ на сообщение
-     */
-    private void sendText(Message message, String response) {
-        try {
-            vk.messages().send(actor).
-                    message(response).
-                    userId(message.getFromId()).
-                    randomId(random.nextInt(10000)).
-                    execute();
-        } catch (ApiException | ClientException e) {
-            e.printStackTrace();
-        }
     }
 }

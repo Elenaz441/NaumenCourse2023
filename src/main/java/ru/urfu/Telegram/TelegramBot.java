@@ -12,22 +12,41 @@ import ru.urfu.Bot;
 /**
  * Класс для телеграм-бота
  */
-public class TelegramBot extends TelegramLongPollingBot {
-
-    Bot bot;
+public class TelegramBot extends TelegramLongPollingBot implements Bot {
+    
+    private String botName;
+    private String botToken;
 
     /**
      * Конструктор для телеграм-бота
-     * @param bot - логика нашего бота
      */
-    public TelegramBot(Bot bot) {
-        this.bot = bot;
+    public TelegramBot(String botName, String botToken) {
+        this.botName = botName;
+        this.botToken = botToken;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return this.botName;
+    }
+
+    @Override
+    public String getBotToken() {
+        return this.botToken;
+    }
+
+    @Override
+    public void onUpdateReceived(Update update) {
+        Message msg = update.getMessage();
+        String response = logic.formResponse(msg.getText());
+        sendText(msg.getFrom().getId(), response);
     }
 
     /**
-     * Начать работу телеграм-бота
+     * Функция старта
      */
-    public void startTelegramBot() {
+    @Override
+    public void startBot() {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(this);
@@ -36,29 +55,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    @Override
-    public String getBotUsername() {
-        return bot.getBotName();
-    }
-
-    @Override
-    public String getBotToken() {
-        return bot.getBotToken();
-    }
-
-    @Override
-    public void onUpdateReceived(Update update) {
-        Message msg = update.getMessage();
-        String response = bot.formResponse(msg.getText());
-        sendText(msg.getFrom().getId(), response);
-    }
-
     /**
-     * Отправка сообщений
+     * Отправка сообщения
      */
-    private void sendText(Long userId, String message){
+    @Override
+    public void sendText(Long chatId, String message) {
         SendMessage sm = SendMessage.builder()
-                .chatId(userId.toString())
+                .chatId(Long.toString(chatId))
                 .text(message).build();
         try {
             execute(sm);

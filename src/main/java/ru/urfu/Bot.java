@@ -1,39 +1,22 @@
 package ru.urfu;
 
 /**
- * Класс бота
+ * Интерфейс для ботов
  */
-public class Bot {
-
-    private String botName;
-    private String botToken;
+public interface Bot {
 
     /**
-     * Конструктор бота
+     * Общая логика для ботов
      */
-    public Bot(String botName, String botToken) {
-        this.botName = botName;
-        this.botToken = botToken;
-    }
+    Logic logic = new Logic();
 
     /**
-     * Геттер для названия бота
+     * Функция старта
      */
-    public String getBotName() {
-        return botName;
-    }
+    void startBot();
 
     /**
-     * Геттер для токена бота
+     * Отправка сообщения
      */
-    public String getBotToken() {
-        return botToken;
-    }
-
-    /**
-     * Формирование ответа пользователю
-     */
-    public String formResponse(String message) {
-        return "Ваше сообщение: " + message;
-    }
+    void sendText(Long chatId, String message);
 }
