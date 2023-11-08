@@ -40,10 +40,7 @@ public class Main {
      * Переехать из текущего места в заданную точку
      * на любом, заранее определённом транспорте
      */
-    public static void moveTo(Person person, Position destination) {
-        List<Transport> transports = Arrays.asList(new Car(person),
-                new Bus("43", person),
-                new Bus("50", person));
+    public static void moveTo(Person person, Position destination, List<Transport> transports) {
         for (Transport transport : transports) {
             person.walk(transport.getPosition());
             transport.ride(person, destination);
