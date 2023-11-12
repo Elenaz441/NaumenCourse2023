@@ -12,9 +12,10 @@ public class RunnerBot {
      * Запуск бота на платформах Vk и telegram
      */
     public void run() {
-        Bot tgBot = new TelegramBot(System.getenv("BOT_TG_NAME"), System.getenv("BOT_TG_TOKEN"));
+        Logic logic = new Logic();
+        Bot tgBot = new TelegramBot(System.getenv("BOT_TG_NAME"), System.getenv("BOT_TG_TOKEN"), logic);
         tgBot.startBot();
-        Bot vkBot = new VkBot(System.getenv("BOT_VK_ID"), System.getenv("BOT_VK_TOKEN"));
+        Bot vkBot = new VkBot(System.getenv("BOT_VK_ID"), System.getenv("BOT_VK_TOKEN"), logic);
         vkBot.startBot();
     }
 }

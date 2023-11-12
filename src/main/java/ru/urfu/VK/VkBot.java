@@ -9,6 +9,7 @@ import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.messages.Message;
 import com.vk.api.sdk.queries.messages.MessagesGetLongPollHistoryQuery;
 import ru.urfu.Bot;
+import ru.urfu.Logic;
 
 import java.util.List;
 import java.util.Random;
@@ -18,15 +19,16 @@ import java.util.Random;
  */
 public class VkBot implements Bot {
 
-    private VkApiClient vk;
-    private GroupActor actor;
+    private final VkApiClient vk;
+    private final GroupActor actor;
     private int ts;
-    private Random random;
+    private final Random random;
+    private final Logic logic;
 
     /**
      * Конструктор для vk-бота
      */
-    public VkBot(String botName, String botToken) {
+    public VkBot(String botName, String botToken, Logic logic) {
         TransportClient transportClient = new HttpTransportClient();
         vk = new VkApiClient(transportClient);
         try {
@@ -36,6 +38,7 @@ public class VkBot implements Bot {
             throw new RuntimeException(e);
         }
         random = new Random();
+        this.logic = logic;
     }
 
     @Override

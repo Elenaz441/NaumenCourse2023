@@ -8,21 +8,24 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.urfu.Bot;
+import ru.urfu.Logic;
 
 /**
  * Класс для телеграм-бота
  */
 public class TelegramBot extends TelegramLongPollingBot implements Bot {
     
-    private String botName;
-    private String botToken;
+    private final String botName;
+    private final String botToken;
+    private final Logic logic;
 
     /**
      * Конструктор для телеграм-бота
      */
-    public TelegramBot(String botName, String botToken) {
+    public TelegramBot(String botName, String botToken, Logic logic) {
         this.botName = botName;
         this.botToken = botToken;
+        this.logic = logic;
     }
 
     @Override

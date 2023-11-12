@@ -6,11 +6,6 @@ package ru.urfu;
 public interface Bot {
 
     /**
-     * Общая логика для ботов
-     */
-    Logic logic = new Logic();
-
-    /**
      * Функция старта
      */
     void startBot();
