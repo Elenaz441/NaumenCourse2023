@@ -8,6 +8,8 @@ import product.Product;
 import product.ProductDao;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Тестирование {@link ShoppingService}
@@ -61,6 +63,7 @@ class ShoppingServiceTest {
 
     /**
      * Простая проверка функции {@link ShoppingService#buy(Cart)}
+     * (После покупки корзина не опустошается)
      */
     @Test
     void buy() throws BuyException {
@@ -80,6 +83,11 @@ class ShoppingServiceTest {
         assertTrue(result);
         assertEquals(1, product1.getCount());
         assertEquals(1, product2.getCount());
+        verify(productDaoMock, times(1))
+                .save(product1);
+        verify(productDaoMock, times(1))
+                .save(product2);
+        assertEquals(0, cart.getProducts().size());
     }
 
     /**
@@ -110,6 +118,25 @@ class ShoppingServiceTest {
     }
 
     /**
+     * Тест случая, когда на складе остался то количество товара, которое и хочет выкупить пользователь
+     * (Здесь не получается добавить товар в корзину с нужным количеством)
+     */
+    @Test
+    void buyIfLastProducts() throws BuyException {
+        Product product = new Product();
+        product.setName("p1");
+        product.addCount(2);
+        Customer customer = new Customer(1L, "1111111");
+        Cart cart = new Cart(customer);
+        cart.add(product, 2);
+
+        boolean result = shoppingService.buy(cart);
+
+        assertTrue(result);
+        assertEquals(0, product.getCount());
+    }
+
+    /**
      * Проверка случая, когда корзина пуста
      */
     @Test
@@ -118,5 +145,34 @@ class ShoppingServiceTest {
         Cart cart = new Cart(customer);
         boolean result = shoppingService.buy(cart);
         assertFalse(result);
+    }
+
+    /**
+     * Тест на валидацию данных скорее.
+     * Получается, что в коде нигде нет проверки на количество
+     * (при покупке это тоже не проверяется)
+     */
+    @Test
+    void buyIfProductCountIsNegativeOrZero() throws BuyException {
+        Product product1 = new Product();
+        product1.setName("p1");
+        product1.addCount(2);
+        Product product2 = new Product();
+        product2.setName("p2");
+        product2.addCount(2);
+        Customer customer = new Customer(1L, "1111111");
+        Cart cart = new Cart(customer);
+        cart.add(product1, -2);
+        cart.add(product2, 0);
+
+        boolean result = shoppingService.buy(cart);
+
+        assertFalse(result);
+        assertNotEquals(4, product1.getCount());
+        verify(productDaoMock, times(1))
+                .save(product1);
+        assertEquals(2, product2.getCount());
+        verify(productDaoMock, times(1))
+                .save(product2);
     }
 }
